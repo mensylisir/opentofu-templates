@@ -1,0 +1,14 @@
+#cloud-config
+# 设置 root 用户的密码
+chpasswd:
+  list: |
+    root:Def@u1tpwd  # <<< 修改为你想要的 root 密码
+  expire: False # 密码永不过期
+
+# 允许 root 用户通过密码 SSH 登录
+ssh_pwauth: True # 允许所有用户通过密码认证
+
+# 确保 sshd_config 中 PermitRootLogin 设置为 yes
+runcmd:
+  - sudo sed -i 's/^#?PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+  - sudo systemctl restart sshd
