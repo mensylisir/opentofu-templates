@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cephfs-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: rook-cephfs
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: file-test-pod1
+spec:
+  containers:
+  - name: test-container1
+    image: dockerhub.kubekey.local/library/busybox:latest
+    command: ["/bin/sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - mountPath: "/shared"
+      name: my-shared-storage
+  volumes:
+  - name: my-shared-storage
+    persistentVolumeClaim:
+      claimName: cephfs-pvc
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: file-test-pod2
+spec:
+  containers:
+  - name: test-container2
+    image: dockerhub.kubekey.local/library/busybox:latest
+    command: ["/bin/sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - mountPath: "/shared"
+      name: my-shared-storage
+  volumes:
+  - name: my-shared-storage
+    persistentVolumeClaim:
+      claimName: cephfs-pvc
